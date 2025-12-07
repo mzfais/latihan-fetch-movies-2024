@@ -25,16 +25,17 @@ const app = () => {
   };
   const displayMovies = (movies) => {
     let moviesTemplate = `
-        <div class="row row-cols-1 row-cols-md-3 g-2 g-4">
+           <div class="row row-cols-1 row-cols-lg-3 row-cols-md-2 g-2 g-4">
         `;
     if (movies.length < 1) {
       displayAlert("Data tidak ditemukan");
       return false;
     }
+    console.log(movies);
     movies.forEach((movie) => {
       const { id, original_title, overview, poster_path } = movie;
       moviesTemplate += `
-            <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="col">
             <div class="card h-100">
               <img src="${imageUrl}${poster_path}" class="card-img-top" alt="..." />
               <div class="card-body">
@@ -101,11 +102,28 @@ const app = () => {
   };
   contentElm.addEventListener("click", function (event) {
     if (event.target.classList.contains("card-link")) {
-      //   console.log(this.target);
+      console.log(event.target);
       const movieId = event.target.dataset.id;
+      console.log("id movie", movieId);
       //   panggil function untuk menampilkan detail film
     }
   });
+
+  const handleHashChange = () => {
+    const hash = window.location.hash.substring(1);
+    const popular = hash == "popular";
+    if (popular) {
+      console.log("proses popular");
+      displayLoading();
+      const url =
+        "https://api.themoviedb.org/3/movie/popular?language=en-US&page=2";
+      fetch(url, fetchOptions)
+        .then((response) => response.json())
+        .then((data) => displayMovies(data.results))
+        .catch((error) => console.error(error));
+    }
+  };
+  window.addEventListener("hashchange", handleHashChange);
   window.addEventListener("DOMContentLoaded", getNowPlayingList);
 };
 export default app;
